@@ -44,7 +44,14 @@ static void dummy(void *obj, int c)
     return;
 }
 
-
+void debug2(int msg)
+{
+    char bfr2[254];
+    cc_string msg2;
+    String_InitArray(msg2, bfr2);
+    String_AppendInt(&msg2, msg);
+    Chat_Add(&msg2);
+}
 
 void Event_RaiseInput(struct Event_Input *handlers, int key, cc_bool repeating)
 {
@@ -83,10 +90,9 @@ struct inputState
     int layoutLens[8];
     int langSwitch;
     struct layout layouts[8];
-    void* pressFunc;
+    void *pressFunc;
 
 } static state1;
-
 
 void switchLayout()
 {
@@ -97,44 +103,56 @@ void switchLayout()
     return;
 }
 
-
-
 static void downMgr(void *obj, int c)
 {
-    
-    if (c == 36 || c == 37)
+    switch (c)
     {
-        if(state1.ctrlPressed == true)
+    case 94:
+        return;
+        break;
+    case 36:
+        if (state1.ctrlPressed == true)
         {
             switchLayout();
         }
         state1.shiftPressed = true;
         return;
-    }
-
-    if (c == 38 || c == 39)
-    {
-        if(state1.shiftPressed == true)
+        break;
+    case 37:
+        if (state1.ctrlPressed == true)
+        {
+            switchLayout();
+        }
+        state1.shiftPressed = true;
+        return;
+        break;
+    case 38:
+        if (state1.shiftPressed == true)
         {
             switchLayout();
         }
         state1.ctrlPressed = true;
         return;
-    }
-
-    if (c == 95)
-    {
+    case 39:
+        if (state1.shiftPressed == true)
+        {
+            switchLayout();
+        }
+        state1.ctrlPressed = true;
+        return;
+    case 95:
         state1.tabPressed = true;
         return;
+
     }
 
     if (state1.chatOpen == true)
     {
         if (!state1.shiftPressed && c >= KEY_A && c <= KEY_Z)
-        c += 32;
+            c += 32;
         if ((state1.langSwitch) != 9)
         {
-           
+
             int pos = linearSearch(state1.layouts[state1.langSwitch].x, 0,
                                    state1.layoutLens[state1.langSwitch], c);
             if (pos != -1)
@@ -145,7 +163,8 @@ static void downMgr(void *obj, int c)
             }
         }
 
-        else{
+        else
+        {
             InputEvents_->Press.Handlers[0] = state1.pressFunc;
             Event_RaiseInt(&InputEvents_->Press, c);
             InputEvents_->Press.Handlers[0] = dummy;
@@ -168,7 +187,6 @@ static void downMgr(void *obj, int c)
     }
 }
 
-
 static void upMgr(void *obj, int c)
 {
     if (c == 36 || c == 37)
@@ -183,7 +201,6 @@ static void upMgr(void *obj, int c)
         return;
     }
 }
-
 
 static void crushPages_Init(void)
 {
