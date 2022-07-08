@@ -86,9 +86,9 @@ struct inputState
     cc_bool tabPressed;
     cc_bool ctrlPressed;
     cc_bool chatOpen;
-    int layoutNum;
-    int layoutLens[8];
-    int langSwitch;
+    cc_uint8 layoutNum;
+    cc_uint8 layoutLens[8];
+    cc_uint8 langSwitch;
     struct layout layouts[8];
     void *pressFunc;
 
