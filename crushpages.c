@@ -143,7 +143,7 @@ static void downMgr(void *obj, int c)
     case 95:
         state1.tabPressed = true;
         return;
-
+        break;
     }
 
     if (state1.chatOpen == true)
@@ -189,6 +189,13 @@ static void downMgr(void *obj, int c)
 
 static void upMgr(void *obj, int c)
 {
+
+    if (c == 38 || c == 39)
+    {
+        state1.ctrlPressed = false;
+        return;
+    }
+
     if (c == 36 || c == 37)
     {
         state1.shiftPressed = false;
