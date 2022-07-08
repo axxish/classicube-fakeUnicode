@@ -202,32 +202,8 @@ static void upMgr(void *obj, int c)
     }
 }
 
-static void crushPages_Init(void)
-{
-    state1.chatOpen = false;
-    state1.layoutNum = 0;
-    state1.shiftPressed = false;
-    state1.tabPressed = false;
-
-    for (int i = 0; i < 8; i++)
-    {
-        state1.layoutLens[8] = 0;
-    }
-
-    cc_string msg;
-    char bfr[sizeof(CRP_WELCOME) + sizeof(CRP_PLUGIN_VER)];
-    String_InitArray(msg, bfr);
-    String_AppendConst(&msg, CRP_WELCOME CRP_PLUGIN_VER);
-    Chat_Add(&msg);
-    LoadSymbol(Server);
-    String_AppendConst(&Server_->AppName, CRP_CLIENT CRP_PLUGIN_VER);
-    LoadSymbol(InputEvents);
-    Event_Register_(&InputEvents_->Down, NULL, downMgr);
-    Event_Register_(&InputEvents_->Up, NULL, upMgr);
-
-    state1.pressFunc = InputEvents_->Press.Handlers[0];
-
-    (state1.layouts[0].monicker[0] = 'n', state1.layouts[0].monicker[1] = 'a',
+void na2layout(){
+     (state1.layouts[0].monicker[0] = 'n', state1.layouts[0].monicker[1] = 'a',
      state1.layouts[0].monicker[2] = '2', state1.layouts[0].monicker[3] = '0');
     int *move = state1.layouts[0].y;
     (*move++ = 13, *move++ = 14, *move++ = 15, *move++ = 19, *move++ = 20, *move++ = 158, *move++ = 166);
@@ -252,12 +228,34 @@ static void crushPages_Init(void)
         *move++ = i;
         state1.layoutLens[0]++;
     }
+}
 
-    /*debug(state1.layouts[0].monicker);
-    debug("");
-    debug(state1.layouts[0].x);
-    debug("");
-    debug(state1.layouts[0].y);*/
+static void crushPages_Init(void)
+{
+    state1.chatOpen = false;
+    state1.layoutNum = 0;
+    state1.shiftPressed = false;
+    state1.tabPressed = false;
+
+    for (int i = 0; i < 8; i++)
+    {
+        state1.layoutLens[8] = 0;
+    }
+
+    cc_string msg;
+    char bfr[sizeof(CRP_WELCOME) + sizeof(CRP_PLUGIN_VER)];
+    String_InitArray(msg, bfr);
+    String_AppendConst(&msg, CRP_WELCOME CRP_PLUGIN_VER);
+    Chat_Add(&msg);
+    LoadSymbol(Server);
+    String_AppendConst(&Server_->AppName, CRP_CLIENT CRP_PLUGIN_VER);
+    LoadSymbol(InputEvents);
+    Event_Register_(&InputEvents_->Down, NULL, downMgr);
+    Event_Register_(&InputEvents_->Up, NULL, upMgr);
+    state1.pressFunc = InputEvents_->Press.Handlers[0];
+
+   na2layout();
+
     state1.langSwitch = 9;
 }
 
