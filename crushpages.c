@@ -31,7 +31,7 @@ static struct _InputEventsList *InputEvents_;
 #define NOSERVICE
 #define NOMCX
 #define NOIME
-#include <windows.h>
+//#include <windows.h>
 #define LoadSymbol(name) name##_ = GetProcAddress(app, QUOTE(name))
 #else
 #define _GNU_SOURCE
@@ -39,23 +39,12 @@ static struct _InputEventsList *InputEvents_;
 #define LoadSymbol(name) name##_ = dlsym(RTLD_DEFAULT, QUOTE(name))
 #endif
 
-void debug(const char *msg)
+static void dummy(void *obj, int c)
 {
-    char bfr2[254];
-    cc_string msg2;
-    String_InitArray(msg2, bfr2);
-    String_AppendConst(&msg2, msg);
-    Chat_Add(&msg2);
+    return;
 }
 
-void debug2(int msg)
-{
-    char bfr2[254];
-    cc_string msg2;
-    String_InitArray(msg2, bfr2);
-    String_AppendInt(&msg2, msg);
-    Chat_Add(&msg2);
-}
+
 
 void Event_RaiseInput(struct Event_Input *handlers, int key, cc_bool repeating)
 {
@@ -88,30 +77,19 @@ struct inputState
 {
     cc_bool shiftPressed;
     cc_bool tabPressed;
-    cc_bool needsReplace;
+    cc_bool ctrlPressed;
     cc_bool chatOpen;
     int layoutNum;
     int layoutLens[8];
     int langSwitch;
-    char replaceSymbol;
     struct layout layouts[8];
+    void* pressFunc;
 
 } static state1;
 
-static void scheduledReplace()
-{
-    if (state1.needsReplace)
-    {
-        Event_RaiseInput(&InputEvents_->Down, 94, false);
-        Event_RaiseInt(&InputEvents_->Up, 94);
-        state1.needsReplace = false;
-        Event_RaiseInt(&InputEvents_->Press, state1.replaceSymbol);
-    }
-}
 
 void switchLayout()
 {
-    debug("Layout switched");
     if (state1.langSwitch == 9)
         state1.langSwitch = 0;
     else
@@ -119,12 +97,14 @@ void switchLayout()
     return;
 }
 
+
+
 static void downMgr(void *obj, int c)
 {
     
     if (c == 36 || c == 37)
     {
-        if(state1.tabPressed == true)
+        if(state1.ctrlPressed == true)
         {
             switchLayout();
         }
@@ -132,37 +112,50 @@ static void downMgr(void *obj, int c)
         return;
     }
 
-    if (c == 95)
+    if (c == 38 || c == 39)
     {
-        if (state1.shiftPressed == true)
+        if(state1.shiftPressed == true)
         {
             switchLayout();
         }
+        state1.ctrlPressed = true;
+        return;
+    }
+
+    if (c == 95)
+    {
         state1.tabPressed = true;
         return;
     }
 
     if (state1.chatOpen == true)
     {
+        if (!state1.shiftPressed && c >= KEY_A && c <= KEY_Z)
+        c += 32;
         if ((state1.langSwitch) != 9)
         {
-            if (!state1.shiftPressed && c >= KEY_A && c <= KEY_Z)
-                c += 32;
+           
             int pos = linearSearch(state1.layouts[state1.langSwitch].x, 0,
                                    state1.layoutLens[state1.langSwitch], c);
             if (pos != -1)
             {
-
-                state1.replaceSymbol = state1.layouts[state1.langSwitch].y[pos];
-                state1.needsReplace = true;
+                InputEvents_->Press.Handlers[0] = state1.pressFunc;
+                Event_RaiseInt(&InputEvents_->Press, state1.layouts[state1.langSwitch].y[pos]);
+                InputEvents_->Press.Handlers[0] = dummy;
             }
+        }
+
+        else{
+            InputEvents_->Press.Handlers[0] = state1.pressFunc;
+            Event_RaiseInt(&InputEvents_->Press, c);
+            InputEvents_->Press.Handlers[0] = dummy;
         }
     }
     if (KeyBind_IsPressed(KEYBIND_CHAT) && state1.chatOpen == false)
     {
 
         state1.chatOpen = true;
-        // debug("CHAT OPEN");
+        InputEvents_->Press.Handlers[0] = dummy;
     }
 
     if (state1.chatOpen == true)
@@ -170,14 +163,11 @@ static void downMgr(void *obj, int c)
         if ((KeyBind_IsPressed(KEYBIND_SEND_CHAT) || c == 92))
         {
             state1.chatOpen = false;
-            // debug("CHAT CLOSED");
+            InputEvents_->Press.Handlers[0] = state1.pressFunc;
         }
     }
 }
 
-static void pressMgr(void *obj, int c)
-{
-}
 
 static void upMgr(void *obj, int c)
 {
@@ -194,14 +184,11 @@ static void upMgr(void *obj, int c)
     }
 }
 
-// init
 
 static void crushPages_Init(void)
 {
     state1.chatOpen = false;
-    state1.needsReplace = false;
     state1.layoutNum = 0;
-    ScheduledTask_Add(0.01, scheduledReplace);
     state1.shiftPressed = false;
     state1.tabPressed = false;
 
@@ -218,12 +205,11 @@ static void crushPages_Init(void)
     LoadSymbol(Server);
     String_AppendConst(&Server_->AppName, CRP_CLIENT CRP_PLUGIN_VER);
     LoadSymbol(InputEvents);
-    Event_Register_(&InputEvents_->Press, NULL, pressMgr);
     Event_Register_(&InputEvents_->Down, NULL, downMgr);
     Event_Register_(&InputEvents_->Up, NULL, upMgr);
-    // fallback layouts
 
-    // struct layout na = {"na2"};
+    state1.pressFunc = InputEvents_->Press.Handlers[0];
+
     (state1.layouts[0].monicker[0] = 'n', state1.layouts[0].monicker[1] = 'a',
      state1.layouts[0].monicker[2] = '2', state1.layouts[0].monicker[3] = '0');
     int *move = state1.layouts[0].y;
