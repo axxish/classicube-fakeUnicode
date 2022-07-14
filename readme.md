@@ -1,4 +1,4 @@
-### yaoi codepages
+### classilays
 This is a ClassiCube/MCGalaxy plugin that allows to add language keyboard layouts to your server
 
 ### installation process
