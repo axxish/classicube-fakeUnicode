@@ -4,7 +4,7 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/**",
-                "/home/crush/Documents/fluff/classicube/source/src"
+                "/home/crush/Documents/fluff/classicube/source/src/"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",
