@@ -25,8 +25,12 @@ Add language support to your MCGalaxy server with this plugin suite by replacing
 There's a bundled makefile for Linux.
 
 **Prerequisites**
+
 For linux builds
+
 - [ ] GCC
+
 For windows builds
+
 - [ ] x86_64-w64-mingw32-gcc
 - [ ] mingw-w64-tools
