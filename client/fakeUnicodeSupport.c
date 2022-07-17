@@ -20,7 +20,7 @@
 #include "Graphics.h"
 #include "Funcs.h"
 
-#define PLUGIN_VER "2"
+#define PLUGIN_VER "3"
 #define WELCOME_MESSAGE "&eUsing &8fake&Unicode &fv"
 #define HANDSHAKE_MESSAGE "gimme the unicode bindings"
 
@@ -121,11 +121,12 @@ struct buffer
 // keeps the state of the game
 struct pluginState
 {
-    struct buffer buffer;
+    cc_bool active;
     cc_bool replaceToggle;
     cc_bool chatOpen;
     cc_bool handshaking;
     struct Screen *chatScreen;
+    struct buffer buffer;
     charBind *root;
     void *pressFunc;
 
@@ -255,6 +256,7 @@ void PluginMessageManager(void *obj, cc_uint8 channel, cc_uint8 *data)
         if (plugin.handshaking)
         {
             plugin.buffer.fit = 0;
+            addBind(32, 32);
         }
     }
     else
@@ -309,13 +311,8 @@ void handshake()
 
 void fakeUnicodeSupport_onMapLoad()
 {
-    plugin.pressFunc = InputEvents_->Press.Handlers[0];
-    Event_Register_(&InputEvents_->Down, NULL, KeyDownManager);
-
+    deleteTree(plugin.root);
     handshake();
-
-    addBind(1081, 149);
-    addBind(1094, 163);
 }
 
 void fakeUnicodeSupport_Init()
@@ -329,6 +326,8 @@ void fakeUnicodeSupport_Init()
     plugin.replaceToggle = false;
     plugin.root = NULL;
     Event_Register_(&NetEvents_->PluginMessageReceived, NULL, PluginMessageManager);
+    Event_Register_(&InputEvents_->Down, NULL, KeyDownManager);
+    plugin.pressFunc = InputEvents_->Press.Handlers[0];
 }
 
 #ifdef CC_BUILD_WIN

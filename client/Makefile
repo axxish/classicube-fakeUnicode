@@ -11,7 +11,7 @@ GAME_CFLAGS_WIN64=-mwindows -lws2_32 -lwininet -lwinmm -limagehlp -lcrypt32
 CFLAGS_WIN64=-s -shared -L . -lClassiCube -I$(IDIR)
 
 linux: fakeUnicodeSupport.c
-	$(CC) fakeUnicodeSupport.c -o $(BIN_DIR)fakeUnicodeSupport.so $(CFLAGS)
+	$(CC) fakeUnicodeSupport.c -o $(BIN_DIR)/fakeUnicodeSupport.so $(CFLAGS)
 win64: fakeUnicodeSupport.c
 	$(CC_WIN64) $(IDIR)/*.c -o $(BIN_DIR)/ClassiCube.exe $(GAME_CFLAGS_WIN64)
 	gendef $(BIN_DIR)/ClassiCube.exe 
