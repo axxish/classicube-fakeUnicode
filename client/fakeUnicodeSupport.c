@@ -81,7 +81,7 @@ static void dummy()
     return;
 }
 
-// dirty debug functions
+// dirty debug function
 void debug1(const char *msg)
 {
     char bfr2[254];

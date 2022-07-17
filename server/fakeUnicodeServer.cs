@@ -41,7 +41,6 @@ namespace fakeUnicodeServer
             foreach (string line in System.IO.File.ReadLines(configurationPath))
             {
                 lineCount++;
-                //p.Message(line);
                 string trimmed = line.Trim();
                 //for comments and empty lines
                 if (!(string.IsNullOrEmpty(trimmed)))
