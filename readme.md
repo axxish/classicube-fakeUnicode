@@ -15,6 +15,7 @@ Add language support to your MCGalaxy server with this plugin suite by replacing
 1. Place `fakeUnicodeServer.dll` in the `plugins` folder of your MCGalaxy installation
 2. Create a `fakeUnicodeServer` folder in `plugins` and create a `bindings.cfg` file. An example configuration is bundled with every release
 3. Install a fitting texture pack on your server (an example one is bundled with every release) 
+
 **ClassiCube*
 1. Place `fakeUnicodeSupport.so` on Linux or `fakeUnicodeSupport.dll` in the `plugins` folder of your ClassiCube installation
 
