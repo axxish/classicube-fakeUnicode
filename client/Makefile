@@ -1,5 +1,5 @@
 CC=gcc
-IDIR=/home/crush/Documents/fluff/classicube/source/src/
+IDIR=ClassiCube/src
 CFLAGS=-shared -ldl -fPIC -I$(IDIR)
 
 build: fakeUnicodeSupport.c
